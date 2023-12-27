@@ -10,19 +10,20 @@ def test_examples():
     assert method(14) == 2
     assert method(1969) == 654
     assert method(100756) == 33583
+    print("Tests passed.")
 
 
-def puzzle1():
+def puzzle():
     answer = 0
     with open(r'input.txt', 'r', encoding="utf-8") as input_file:
         data = input_file.readlines()
 
         for d in data:
-            answer += method(int(d.strip()))
+            answer += method(d.strip())
 
     print(f'{answer}')
 
 
 if __name__ == '__main__':
     test_examples()
-    puzzle1()
+    puzzle()
