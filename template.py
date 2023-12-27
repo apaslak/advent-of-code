@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+from sys import argv
+
+
+def log(s):
+    try:
+        debug_flag = argv[1]
+        if debug_flag:
+            print(s)
+    except IndexError:
+        pass
+
 
 def method(param):
     pass
