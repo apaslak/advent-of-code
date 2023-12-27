@@ -26,4 +26,4 @@ def puzzle():
 
 if __name__ == '__main__':
     test_examples()
-    puzzle()
+    # puzzle()
