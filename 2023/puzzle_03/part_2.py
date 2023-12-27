@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
 
-def is_dot(c):
-    return c == "."
+from collections import defaultdict
 
 
-def is_symbol(c):
-    return not c.isdigit() and not is_dot(c)
+def is_asterisk(c):
+    return c == "*"
 
 
-def is_symbol_adjacent(schematic, i, j):
+def adjacent_asterisks(schematic, i, j, asterisks_found):
     directions = [
         (-1, 1), (0, 1), (1, 1),
         (-1, 0), (1, 0),
@@ -22,42 +21,53 @@ def is_symbol_adjacent(schematic, i, j):
         except IndexError:
             continue
 
-        if is_symbol(neighbor):
-            return True
+        if is_asterisk(neighbor):
+            asterisks_found.add((new_i, new_j))
 
-    return False
+    return asterisks_found
 
 
-def sum_engine_parts(schematic):
+def find_potential_gears(schematic):
     """
     y = row
     x = column
     """
-    sum = 0
     possible_number = ''
-    check = True
+    asterisks_found = set()
+    # asterisk_to_parts is a dict where the keys are tuples indicating the location of the asterisk
+    # and the values are sets of part numbers
+    asterisk_to_parts = defaultdict(set)
     for i, y in enumerate(schematic):
         for j, x in enumerate(y):
             is_number = x.isdigit()
-            if is_number and check:
-                if is_symbol_adjacent(schematic, i, j):
-                    check = False
-
             if is_number:
+                asterisks_found.update(adjacent_asterisks(schematic, i, j, asterisks_found))
                 possible_number += x
 
-            if not is_number and not check:
-                sum += int(possible_number)
+            if not is_number and len(asterisks_found) > 0:
+                for asterisk in asterisks_found:
+                    asterisk_to_parts[asterisk].add(int(possible_number))
 
             if not is_number:
                 possible_number = ''
-                check = True
+                asterisks_found = set()
 
-        if is_number and not check:
-            sum += int(possible_number)
+        if is_number and len(asterisks_found) > 0:
+            for asterisk in asterisks_found:
+                asterisk_to_parts[asterisk].add(int(possible_number))
 
         possible_number = ''
-        check = True
+        asterisks_found = set()
+    return asterisk_to_parts
+
+
+def sum_gear_ratios(schematic):
+    sum = 0
+    asterisk_to_parts = find_potential_gears(schematic)
+    for asterisk, part_numbers in asterisk_to_parts.items():
+        if len(part_numbers) == 2:
+            sum += part_numbers.pop() * part_numbers.pop()
+
     return sum
 
 
@@ -69,7 +79,7 @@ def test_examples():
         for d in data:
             schematic.append(list(d.strip()))
 
-    assert sum_engine_parts(schematic) == 4361
+    assert sum_gear_ratios(schematic) == 467835
     print("Tests passed.")
 
 
@@ -81,7 +91,7 @@ def puzzle():
         for d in data:
             schematic.append(list(d.strip()))
 
-    answer = sum_engine_parts(schematic)
+    answer = sum_gear_ratios(schematic)
     print(f'{answer}')
 
 
