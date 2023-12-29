@@ -16,21 +16,23 @@ def method(param):
     pass
 
 
+def parse_input_file(file_name):
+    with open(file_name, 'r', encoding="utf-8") as input_file:
+        data = input_file.readlines()
+
+        for d in data:
+            row = d.strip()
+    return row
+
+
 def test_examples():
-    assert method(12) == 2
-    assert method(14) == 2
-    assert method(1969) == 654
-    assert method(100756) == 33583
+    row = parse_input_file(r"test_input.txt")
+
     print("Tests passed.")
 
 
 def puzzle():
-    answer = 0
-    with open(r'input.txt', 'r', encoding="utf-8") as input_file:
-        data = input_file.readlines()
-
-        for d in data:
-            answer += method(d.strip())
+    answer = parse_input_file(r"input.txt")
 
     print(f'{answer}')
 
